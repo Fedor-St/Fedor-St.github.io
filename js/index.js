@@ -360,18 +360,18 @@ initializeSlider('#training__slider', {
       items: 1,
       edgePadding: 10,
       gutter: 10,
-      center: true,
+      center: false,
+      mouseDrag: true,
+      controls: false,
     },
     600: {
       items: 2,
       gutter: 12,
-      center: false,
       edgePadding: 0,
     },
     1023: {
-      items: 3,
+      items: 2,
       gutter: 32,
-      controls: true,
     },
   }
 });
