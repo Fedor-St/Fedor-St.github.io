@@ -59,6 +59,54 @@ for (let i = 0; i < headerSubmenuBtn.length; i++) {
   });
 }
 
+/////////////////////////////////
+//Header Sub menu Tab-opening //
+///////////////////////////////
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdownButtons = document.querySelectorAll('.menu-items__dropdown-btn > .menu-items__link[aria-haspopup="true"]');
+
+  dropdownButtons.forEach((button) => {
+    // When the dropdown button/link is focused, show the submenu
+    button.addEventListener('focus', () => {
+      const dropdownContent = button.nextElementSibling;
+      if (dropdownContent) {
+        dropdownContent.style.display = 'block';
+      }
+    });
+
+    // When tabbing out of the last item in the dropdown, hide the dropdown
+    const dropdownItems = button.nextElementSibling.querySelectorAll('a');
+    if (dropdownItems.length > 0) {
+      const lastItem = dropdownItems[dropdownItems.length - 1];
+      lastItem.addEventListener('blur', () => {
+        const dropdownContent = button.nextElementSibling;
+        if (dropdownContent) {
+          // Use a timeout to delay the check, allowing the next focused element to be verified
+          setTimeout(() => {
+            if (!document.activeElement.closest('.menu-items__dropdown-content')) {
+              dropdownContent.style.display = 'none';
+            }
+          }, 1);
+        }
+      });
+    }
+  });
+
+  // Additionally, to handle mouse hover for non-keyboard users
+  const dropdownParents = document.querySelectorAll('.menu-items__dropdown-btn');
+  dropdownParents.forEach(parent => {
+    parent.addEventListener('mouseenter', () => {
+      parent.querySelector('.menu-items__dropdown-content').style.display = 'block';
+    });
+    parent.addEventListener('mouseleave', () => {
+      parent.querySelector('.menu-items__dropdown-content').style.display = 'none';
+    });
+  });
+});
+
+
+
+
 //////////////////
 //Home: Sliders//
 ////////////////
@@ -236,46 +284,180 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     }
   });
+
+//Our services: permanent make up: check our services slider
+initializeSlider('#check-services__slider', {
+
+  container: '#check-services__slider',
+  controlsContainer: "#check-services-slider__customize-controls",
+  prevButton: "#check-services-slider__prev-btn",
+  nextButton: "#check-services-slider__next-btn",
+
+  responsive: {
+    300: {
+      items: 1,
+      edgePadding: 10,
+      gutter: 10,
+      center: true,
+    },
+    600: {
+      items: 2,
+      gutter: 12,
+      center: false,
+      edgePadding: 0,
+    },
+    1023: {
+      items: 3,
+      gutter: 32,
+      controls: true,
+    },
+  }
+});
+
+////////////////////////
+//Our courses: Russian volume perfect line: get ready to produce results
+initializeSlider('#check-services__slider', {
+
+  container: '#check-services__slider',
+  controlsContainer: "#check-services-slider__customize-controls",
+  prevButton: "#check-services-slider__prev-btn",
+  nextButton: "#check-services-slider__next-btn",
+
+  responsive: {
+    300: {
+      items: 1,
+      edgePadding: 10,
+      gutter: 10,
+      center: true,
+    },
+    600: {
+      items: 2,
+      gutter: 12,
+      center: false,
+      edgePadding: 0,
+    },
+    1023: {
+      items: 3,
+      gutter: 32,
+      controls: true,
+    },
+  }
+});
+///////////////////////////////////////
+//Our courses: Russian volume perfect line: get ready to produce results
+initializeSlider('#training__slider', {
+
+  container: '#training__slider',
+  // controlsContainer: "#check-services-slider__customize-controls",
+  // prevButton: "#check-services-slider__prev-btn",
+  // nextButton: "#check-services-slider__next-btn",
+  arrowKeys: false,
+  mouseDrag: false,
+  autoplay: false,
+
+  responsive: {
+    300: {
+      items: 1,
+      edgePadding: 10,
+      gutter: 10,
+      center: true,
+    },
+    600: {
+      items: 2,
+      gutter: 12,
+      center: false,
+      edgePadding: 0,
+    },
+    1023: {
+      items: 3,
+      gutter: 32,
+      controls: true,
+    },
+  }
+});
 });
 
 //////////////////////
-//Home: FAQ section//
+//Accordion section//
 ////////////////////
-const faqBtn = document.getElementsByClassName("faq__btn");
+function initializeAccordion(clickSelector, toggleContentSelector, toggleClass) {
+  const items = document.querySelectorAll(clickSelector);
 
-for (let i = 0; i < faqBtn.length; i++) {
-  faqBtn[i].addEventListener("click", function() {
-    this.classList.toggle("faq__btn-active");
-
-    const faqDescr = this.nextElementSibling;
-    if (faqDescr.style.maxHeight) {
-      faqDescr.style.maxHeight = null;
-      } else {
-        faqDescr.style.maxHeight = faqDescr.scrollHeight + "px";
+  items.forEach(item => {
+      // Initialize aria-expanded for accessibility
+      const content = item.querySelector(toggleContentSelector);
+      if (content) {
+          content.style.height = '0px'; // Ensure all are collapsed initially
+          item.setAttribute('aria-expanded', 'false'); // Set as collapsed
       }
+
+      item.addEventListener('click', function(event) {
+          event.preventDefault();
+          const content = item.querySelector(toggleContentSelector);
+          if (!content) return;
+
+          const isExpanded = item.getAttribute('aria-expanded') === 'true';
+          // Toggle the current item's expanded state
+          item.setAttribute('aria-expanded', String(!isExpanded));
+
+          // Close all items except the current one
+          items.forEach(otherItem => {
+              if (otherItem !== item) {
+                  const contentToHide = otherItem.querySelector(toggleContentSelector);
+                  if (contentToHide) {
+                      contentToHide.style.height = '0px';
+                      otherItem.setAttribute('aria-expanded', 'false'); // Mark as collapsed
+                  }
+                  // Optionally remove the class from other items if specified
+                  if (toggleClass) {
+                      otherItem.classList.remove(toggleClass);
+                  }
+              }
+          });
+
+          // Set the height dynamically for a smooth transition
+          content.style.height = isExpanded ? '0px' : `${content.scrollHeight}px`;
+
+          if (toggleClass) {
+              item.classList.toggle(toggleClass, !isExpanded);
+          }
+      });
   });
 }
+
+initializeAccordion('.faq__list-item', '.faq__item-descr', 'faq_active');
+initializeAccordion('.program__block', '.program__block-descr', 'program__block-expanded');
 
 ////////////////////
 //Contact us Form//
 //////////////////
 
 
-
 //////////////////////////
 //Footer Submenu Button//
 ////////////////////////
-const footerMenuBtn = document.getElementsByClassName("footer__dropdown-btn");
+document.addEventListener('DOMContentLoaded', () => {
+  const footerMenuBtn = document.getElementsByClassName("footer__dropdown-btn");
 
-for (let i = 0; i < footerMenuBtn.length; i++) {
-  footerMenuBtn[i].addEventListener("click", function() {
-    this.classList.toggle("footer__submenu-active");
-
-    const footerSubmenu = this.nextElementSibling;
-    if (footerSubmenu.style.maxHeight) {
-      footerSubmenu.style.maxHeight = null;
+  const toggleSubmenu = function() {
+      const footerSubmenu = this.nextElementSibling;
+      if (footerSubmenu.style.maxHeight) {
+          footerSubmenu.style.maxHeight = null;
+          this.setAttribute('aria-expanded', 'false');
       } else {
-        footerSubmenu.style.maxHeight = footerSubmenu.scrollHeight + "px";
+          footerSubmenu.style.maxHeight = footerSubmenu.scrollHeight + "px";
+          this.setAttribute('aria-expanded', 'true');
       }
+      this.classList.toggle("footer__submenu-active");
+  };
+
+  Array.from(footerMenuBtn).forEach(button => {
+      button.addEventListener("click", toggleSubmenu);
+
+      button.addEventListener("keydown", function(event) {
+          if (event.key === "Enter" || event.keyCode === 13) {
+              toggleSubmenu.call(this);
+          }
+      });
   });
-}
+});
